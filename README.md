@@ -1,4 +1,4 @@
-# japangeoid-go
+# japan-geoid-go
 
 日本のジオイド高を計算するための Go ライブラリ / Go library for calculating geoid height in Japan
 
