@@ -5,10 +5,12 @@
 - 本ライブラリは国土地理院が提供するものではありません。
 - 本ライブラリは [ciscorn/japan-geoid](https://github.com/ciscorn/japan-geoid/tree/main) （MIT License）を参考に実装しています。
 
-対応ジオイドモデル：
+## 対応ジオイドモデル
 
 - 日本のジオイド 2011（Ver.2.2）（[出典](https://fgd.gsi.go.jp/download/geoid.php)）: `gsigeoid2011`
 - 日本のジオイド 2025（[出典](https://www.gsi.go.jp/buturisokuchi/grageo_reference.html)）: 正式公開後対応予定
+
+## 使い方
 
 ```go
 package main
@@ -38,6 +40,6 @@ func Example() {
 }
 ```
 
-## Lisence
+## License
 
 [MIT Lisence](LICENSE)
