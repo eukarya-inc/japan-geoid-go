@@ -10,14 +10,10 @@
 
 | パッケージ | 関数 | 内容 | サイズ |
 |-----------|------|------|--------|
-| `gsigeoid2011` | `Load()` | 日本のジオイド2011（Ver.2.2） | 約300KB |
 | `gsigeoid2024` | `Load()` | ジオイド2024＋基準面補正パラメータ（合成版、推奨） | 約400KB |
 | `gsigeoid2024` | `LoadHrefconv()` | 基準面補正パラメータのみ | 約15KB |
 | `gsigeoid2024geoid` | `Load()` | ジオイド2024のみ | 約3.7MB |
-
-### 日本のジオイド2011（Ver.2.2）
-
-- 出典: https://fgd.gsi.go.jp/download/geoid.php
+| `gsigeoid2011` | `Load()` | 日本のジオイド2011（Ver.2.2） | 約300KB |
 
 ### ジオイド2024（日本とその周辺）＋基準面補正パラメータ
 
@@ -33,32 +29,11 @@
 
 ※ ジオイドのみのデータが大きい理由：合成版は海域がnodata扱いですが、ジオイドのみのデータは海域にも値が含まれており、圧縮効率が低くなっています。
 
+### 日本のジオイド2011（Ver.2.2）
+
+- 出典: https://www.gsi.go.jp/buturisokuchi/grageo_reference.html
+
 ## 使い方
-
-### gsigeoid2011
-
-## 使い方
-
-```go
-package main
-
-import (
-	"fmt"
-	"github.com/eukarya-inc/japan-geoid-go/gsigeoid2011"
-)
-
-func main() {
-	g, err := gsigeoid2011.Load()
-	if err != nil {
-		panic(err)
-	}
-
-	lng, lat := 138.2839817085188, 37.12378643088312
-	height := g.GetHeight(lng, lat)
-	fmt.Printf("Geoid height: %.6f\n", height)
-	// Output: Geoid height: 39.473871
-}
-```
 
 ### gsigeoid2024
 
@@ -110,6 +85,29 @@ func main() {
 	height := g.GetHeight(lng, lat)
 	fmt.Printf("Geoid height: %.6f\n", height)
 	// Output: Geoid height: 39.596702
+}
+```
+
+### gsigeoid2011
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/eukarya-inc/japan-geoid-go/gsigeoid2011"
+)
+
+func main() {
+	g, err := gsigeoid2011.Load()
+	if err != nil {
+		panic(err)
+	}
+
+	lng, lat := 138.2839817085188, 37.12378643088312
+	height := g.GetHeight(lng, lat)
+	fmt.Printf("Geoid height: %.6f\n", height)
+	// Output: Geoid height: 39.473871
 }
 ```
 
