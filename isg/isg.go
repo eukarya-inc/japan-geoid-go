@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -93,17 +94,27 @@ func ParseHeader(s *bufio.Scanner) (*Header, error) {
 	header := &Header{}
 
 	// Find begin_of_head
+	foundBegin := false
 	for s.Scan() {
 		line := s.Text()
 		if strings.HasPrefix(line, "begin_of_head") {
+			foundBegin = true
 			break
 		}
 	}
+	if err := s.Err(); err != nil {
+		return nil, err
+	}
+	if !foundBegin {
+		return nil, errors.New("begin_of_head not found")
+	}
 
 	// Parse header
+	foundEnd := false
 	for s.Scan() {
 		line := s.Text()
 		if strings.HasPrefix(line, "end_of_head") {
+			foundEnd = true
 			break
 		}
 
@@ -210,6 +221,9 @@ func ParseHeader(s *bufio.Scanner) (*Header, error) {
 	if err := s.Err(); err != nil {
 		return nil, err
 	}
+	if !foundEnd {
+		return nil, errors.New("end_of_head not found")
+	}
 
 	// validate
 	if header.NRows == 0 || header.NCols == 0 {
@@ -250,12 +264,12 @@ func ParseDMS(s string) (float64, error) {
 		return 0, err
 	}
 
-	// Handle negative degrees (minutes and seconds follow the sign)
+	// Handle negative degrees (including -0°, e.g., -0°30'00\")
 	sign := 1.0
-	if deg < 0 {
+	if strings.HasPrefix(strings.TrimSpace(matches[1]), "-") {
 		sign = -1.0
-		deg = -deg
 	}
+	deg = math.Abs(deg)
 
 	return sign * (deg + min/60.0 + sec/3600.0), nil
 }
