@@ -19,6 +19,8 @@ func TestParseDMS(t *testing.T) {
 		{"0°01'30\"", 1.5 / 60.0},            // 1 min 30 sec = 1.5/60 deg = 1/40 deg
 		{"  15°00'00\"  ", 15.0},             // leading/trailing spaces
 		{"-10°30'00\"", -10.5},               // negative value
+		{"-0°30'00\"", -0.5},                 // negative zero degrees
+		{"-0°15'30\"", -(15.0/60.0 + 30.0/3600.0)}, // negative zero with minutes & seconds
 		{"35°41'22.4\"", 35.0 + 41.0/60.0 + 22.4/3600.0}, // decimal seconds
 	}
 
@@ -110,6 +112,41 @@ end_of_head ==================================================
 		if grid.Points[i] != v {
 			t.Errorf("Points[%d]: got %f, want %f", i, grid.Points[i], v)
 		}
+	}
+}
+
+func TestParseHeader_MissingDelimiters(t *testing.T) {
+	contentNoBegin := `model name     : TestModel
+lat min        =  35°00'00"
+lat max        =  36°00'00"
+lon min        = 139°00'00"
+lon max        = 140°00'00"
+delta lat      =   0°30'00"
+delta lon      =   0°30'00"
+nrows          =        3
+ncols          =        3
+end_of_head ==================================================
+`
+	_, err := Parse(strings.NewReader(contentNoBegin))
+	if err == nil || !strings.Contains(err.Error(), "begin_of_head not found") {
+		t.Errorf("expected begin_of_head not found error, got: %v", err)
+	}
+
+	contentNoEnd := `begin_of_head ================================================
+model name     : TestModel
+lat min        =  35°00'00"
+lat max        =  36°00'00"
+lon min        = 139°00'00"
+lon max        = 140°00'00"
+delta lat      =   0°30'00"
+delta lon      =   0°30'00"
+nrows          =        3
+ncols          =        3
+1.0 2.0 3.0
+`
+	_, err = Parse(strings.NewReader(contentNoEnd))
+	if err == nil || !strings.Contains(err.Error(), "end_of_head not found") {
+		t.Errorf("expected end_of_head not found error, got: %v", err)
 	}
 }
 

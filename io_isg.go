@@ -2,6 +2,7 @@ package japangeoid
 
 import (
 	"io"
+	"math"
 	"strings"
 
 	"github.com/eukarya-inc/japan-geoid-go/isg"
@@ -20,8 +21,8 @@ func FromIsg(r io.Reader) (*MemoryGrid, error) {
 	// XDenom, YDenom を計算
 	// delta lon = 1/40度 → XDenom = 40
 	// delta lat = 1/60度 → YDenom = 60
-	xDenom := uint32(1.0 / header.DeltaLon)
-	yDenom := uint32(1.0 / header.DeltaLat)
+	xDenom := uint32(math.Round(1.0 / header.DeltaLon))
+	yDenom := uint32(math.Round(1.0 / header.DeltaLat))
 
 	// Version文字列は10文字以下に制限（バイナリ形式の制約）
 	version := header.ModelName
@@ -48,7 +49,7 @@ func FromIsg(r io.Reader) (*MemoryGrid, error) {
 			points[i] = 9990000
 		} else {
 			// 小数点4桁を整数に変換 (例: 12.3456 → 123456)
-			points[i] = int32(val * 10000)
+			points[i] = int32(math.Round(val * 10000))
 		}
 	}
 
